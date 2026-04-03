@@ -15,13 +15,17 @@ A premium, modern web application for solving Ordinary Differential Equations (O
   - Inter font family for superior readability
   - Premium glassmorphism navbar and dark-themed hero sections
   - Fluid micro-animations for an enhanced user experience
+  - Interactive tour guide for seamless user onboarding
 - **Advanced Numerical Solvers**:
-  - **Finite Difference Method**: Now supports linear ODEs of the form $y'' = P(x)y' + Q(x)y + R(x)$ with second-order accuracy.
-  - **Shooting Method**: Robust RK45-based solver with adaptive step size control, capable of handling general non-linear ODEs.
+  - **Finite Difference Method**: Strictly supports linear ODEs of the form $y'' = P(x)y' + Q(x)y + R(x)$ with second-order accuracy, featuring second-order backward difference implementations for Neumann boundary conditions.
+  - **Shooting Method**: Robust RK45-based solver with adaptive step size control, utilizing an advanced scanning and bracketing root-finding strategy and extracting high-precision derivatives directly from the integration engine.
 - **Full Boundary Condition Support**:
   - Dirichlet boundary conditions ($y(a) = \alpha$, $y(b) = \beta$)
   - Mixed/Neumann boundary conditions ($y(a) = \alpha$, $y'(b) = \beta$)
-- **Interactive Visuals**: Real-time plotting with high-quality result tables and "Quick Templates" for rapid testing.
+- **Interactive Visuals & Tools**: 
+  - Real-time plotting with high-quality result tables and "Quick Templates" for rapid testing.
+  - One-click CSV export functionality for all numerical result tables.
+  - Robust error reporting with clear, actionable feedback when solvers fail to converge.
 - **Educational Resources**: In-depth mathematical documentation explaining the theory behind each solver.
 
 
@@ -56,28 +60,32 @@ python app.py
 ```
 ode-solver/
 ├── app.py                 # Main Flask application & Solver Engine
+├── Dockerfile             # Docker container definition
+├── docker-compose.yml     # Multi-container orchestration
+├── Procfile               # Heroku deployment configuration
 ├── requirements.txt       # Unified Python dependencies
-├── README.md             # Project documentation
-├── static/               # Frontend assets
+├── README.md              # Project documentation
+├── static/                # Frontend assets
 │   ├── css/
-│   │   └── style.css     # Premium unified stylesheet
+│   │   └── style.css      # Premium unified stylesheet
 │   └── js/
-│       └── script.js     # AJAX handling & interactive logic
-└── templates/            # HTML5 Templates
-    ├── base.html         # Shared layout with glassmorphism navbar
-    ├── index.html        # Interactive solver dashboard
+│       ├── script.js      # AJAX handling & interactive logic
+│       └── tour.js        # Interactive user onboarding guide
+└── templates/             # HTML5 Templates
+    ├── base.html          # Shared layout with glassmorphism navbar
+    ├── index.html         # Interactive solver dashboard
     └── documentation.html # Technical guide & math theory
 ```
 
 ## 🔬 Technical Details
 
 ### Numerical Engine
-- **Finite Difference**: Uses central difference approximations. The engine automatically extracts linear coefficients ($P, Q, R$) using **SymPy** to build and solve tridiagonal matrix systems.
-- **Shooting Method**: Implements a "Projectile" approach converting BVPs to IVPs. Uses **solve_ivp** (RK45) and **Brent's method** for high-precision root finding of the initial slope.
+- **Finite Difference**: Uses central difference approximations for the domain and second-order backward differences for boundary conditions. The engine automatically extracts linear coefficients ($P, Q, R$) using **SymPy** to build and solve tridiagonal matrix systems.
+- **Shooting Method**: Implements a "Projectile" approach converting BVPs to IVPs. Uses **solve_ivp** (RK45) alongside robust scanning and bracketing capabilities for high-precision determination of the initial slope, guaranteeing mathematical rigor.
 
 ### Accuracy & Stability
-- **FD**: $O(h^2)$ truncation error.
-- **Shooting**: $O(h^5)$ local error, extremely stable for non-linear systems.
+- **FD**: $O(h^2)$ consistent truncation error across the domain and boundaries.
+- **Shooting**: $O(h^5)$ local error, extremely stable for complex non-linear systems due to adaptive step size and pre-scanned bracketing strategies.
 
 ## 🤝 Contributing
 Contributions are welcome! Whether it's adding new solvers, improving UI aesthetics, or fixing bugs, feel free to fork and PR.
