@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container py-4">
+        <header class="head fade-in d-flex flex-column align-items-center">
+            <h1>ODE BVP Solver</h1>
+            <p class="lead opacity-75">Professional Ordinary Differential Equation Boundary Value Problem Solver</p>
+            <button class="btn btn-outline-light btn-sm mt-3 px-4 rounded-pill" onclick="startTour()">
+                <i class="bi bi-info-circle me-1"></i> Start Guide
+            </button>
+        </header>
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <main class="card fade-in" style="animation-delay: 0.1s;">
+                    <div class="card-header">
+                        <i class="bi bi-input-cursor-text"></i> System Configuration
+                    </div>
+                    <div class="card-body">
+                        <section class="math-help">
+                            <h5><i class="bi bi-calculator"></i> Mathematical Format Guide</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold mb-2 small text-uppercase text-muted">Operations</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>**</code></li>
+                                        <li><code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>, <code>exp(x)</code></li>
+                                        <li><code>pi</code>, <code>e</code></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6 mt-3 mt-md-0">
+                                    <h6 class="fw-bold mb-2 small text-uppercase text-muted">Examples</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li><code>-y</code> → \(y'' = -y\)</li>
+                                        <li><code>-2*y' - y + x</code> → \(y'' = -2y' - y + x\)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <form id="odeForm" class="row g-3">
+                            <div class="col-12">
+                                <label for="equation" class="form-label">Differential Equation (RHS of y'' = ...)</label>
+                                <div class="input-group text-center">
+                                    <span class="input-group-text bg-light text-muted">y'' =</span>
+                                    <input type="text" class="form-control" id="equation" name="equation" placeholder="e.g., -y + sin(x)" required>
+                                </div>
+                                <div class="form-text mt-2 small">Enter the right-hand side of the second-order ODE.</div>
+                            </div>
+                        
+                            <div class="col-md-6">
+                                <label for="a" class="form-label">Left Boundary (x=a)</label>
+                                <input type="number" class="form-control" id="a" name="a" step="any" value="0" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="b" class="form-label">Right Boundary (x=b)</label>
+                                <input type="number" class="form-control" id="b" name="b" step="any" value="1" required>
+                            </div>
+                        
+                            <div class="col-md-6">
+                                <label for="alpha" class="form-label">Value at a (y(a) = α)</label>
+                                <input type="number" class="form-control" id="alpha" name="alpha" step="any" value="0" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="beta" class="form-label">Value at b (y(b) = β)</label>
+                                <input type="number" class="form-control" id="beta" name="beta" step="any" value="1" required>
+                            </div>
+                        
+                            <div class="col-12">
+                                <label class="form-label mb-3">Boundary Condition Type</label>
+                                <div class="d-flex gap-4 flex-wrap">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="bc_type" id="dirichlet" value="dirichlet" checked>
+                                        <label class="form-check-label" for="dirichlet">
+                                            <strong>Dirichlet:</strong> \(y(a), y(b)\)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="bc_type" id="mixed" value="mixed">
+                                        <label class="form-check-label" for="mixed">
+                                            <strong>Mixed:</strong> \(y(a), y'(b)\)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="col-md-12">
+                                <label for="h" class="form-label">Step Size (h)</label>
+                                <input type="number" class="form-control" id="h" name="h" step="0.01" min="0.001" max="0.5" value="0.1" required>
+                                <div class="form-text small">Smaller h = higher accuracy but slower computation.</div>
+                            </div>
+                        
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary w-100 py-3">
+                                    <i class="bi bi-play-fill"></i> Solve Boundary Value Problem
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="mt-5 border-top pt-4">
+                            <label class="form-label text-muted small text-uppercase mb-3"><i class="bi bi-lightbulb"></i> Try Sample Equations:</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setSampleEquation('-y')">\(y'' = -y\)</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setSampleEquation('x - y')">\(y'' = x - y\)</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setSampleEquation('sin(x)')">\(y'' = \sin(x)\)</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setSampleEquation('exp(-x) - y')">\(y'' = e^{-x} - y\)</button>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        
+        <div id="loading" class="fade-in" style="display: none;">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted fw-500">Computing solution...</p>
+        </div>
+        
+        <div id="results" class="row mt-4" style="display: none;">
+            <div class="col-12 mb-4" id="warnings-container" style="display: none;">
+                <div class="alert alert-warning">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle"></i> Warnings</h5>
+                    <div id="warnings-content" class="small"></div>
+                </div>
+            </div>
+
+            <!-- Finite Difference Results -->
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div><i class="bi bi-grid-3x3-gap me-2"></i> Finite Difference Method</div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="downloadImage('fd')" title="Download Plot">
+                                <i class="bi bi-image"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="exportData('fd')" title="Export CSV">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="fd-plot" class="plot-container"></div>
+                        <div class="row mb-4 text-center">
+                            <div class="col-6 bg-light p-2 rounded">
+                                <small class="d-block text-muted">Grid Points</small>
+                                <span id="fd-points" class="fw-bold">-</span>
+                            </div>
+                            <div class="col-6 bg-light p-2 rounded">
+                                <small class="d-block text-muted">Step Size</small>
+                                <span id="fd-step" class="fw-bold">-</span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>\(x_i\)</th>
+                                        <th>\(y(x_i)\)</th>
+                                        <th>\(y'(x_i)\)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fd-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shooting Method Results -->
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div><i class="bi bi-crosshair me-2"></i> Shooting Method</div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="downloadImage('shooting')" title="Download Plot">
+                                <i class="bi bi-image"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="exportData('shooting')" title="Export CSV">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="shooting-plot" class="plot-container"></div>
+                        <div class="row mb-4 text-center">
+                            <div class="col-6 bg-light p-2 rounded">
+                                <small class="d-block text-muted">Grid Points</small>
+                                <span id="shooting-points" class="fw-bold">-</span>
+                            </div>
+                            <div class="col-6 bg-light p-2 rounded">
+                                <small class="d-block text-muted">Step Size</small>
+                                <span id="shooting-step" class="fw-bold">-</span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>\(x_i\)</th>
+                                        <th>\(y(x_i)\)</th>
+                                        <th>\(y'(x_i)\)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="shooting-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="error-display" class="alert alert-danger" style="display: none;"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/tour.js') }}"></script>
+    {% endblock %}

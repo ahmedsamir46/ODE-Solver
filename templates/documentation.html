@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <header class="head fade-in">
+        <div class="container">
+            <h1 class="display-5 fw-800 text-white">Documentation</h1>
+            <p class="lead text-white-50">Comprehensive Guide to Numerical ODE Solving</p>
+            <div class="d-flex flex-wrap gap-2 mt-4 justify-content-center">
+                <span class="badge-custom bg-primary">Numerical Analysis</span>
+                <span class="badge-custom bg-secondary">BVP Theory</span>
+                <span class="badge-custom bg-accent">Computational Math</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container pb-5">
+        <div class="row">
+            <aside class="col-lg-3">
+                <div class="doc-sidebar mb-4">
+                    <nav id="navbar-docs" class="nav flex-column nav-docs shadow-sm">
+                        <a class="nav-link" href="#introduction">Introduction</a>
+                        <a class="nav-link" href="#mathematical-foundation">Math Foundation</a>
+                        <a class="nav-link" href="#input-format">Input Format</a>
+                        <a class="nav-link" href="#finite-difference">Finite Difference</a>
+                        <a class="nav-link" href="#shooting-method">Shooting Method</a>
+                        <a class="nav-link" href="#error-analysis">Error Analysis</a>
+                        <a class="nav-link" href="#stability-theory">Stability Theory</a>
+                        <a class="nav-link" href="#examples">Examples</a>
+                        <a class="nav-link" href="#advanced-topics">Advanced Topics</a>
+                        <a class="nav-link" href="#limitations">Limitations</a>
+                    </nav>
+                </div>
+            </aside>
+            
+            <main class="col-lg-9">
+                <div data-bs-spy="scroll" data-bs-target="#navbar-docs" data-bs-offset="100" class="scrollspy-docs">
+                    <section id="introduction" class="content-section">
+                        <h2>Introduction</h2>
+                        <p>This platform provides advanced numerical solutions to <strong>boundary value problems (BVPs)</strong> for ordinary differential equations (ODEs). By leveraging Python-based computational engines, we offer high-precision solvers for scientific and engineering applications.</p>
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="p-4 bg-light rounded-lg">
+                                    <h5 class="fw-700 text-primary mb-2">Finite Difference</h5>
+                                    <p class="small text-muted mb-0">Discretizes the domain into a grid and approximates derivatives using algebraic differences.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="p-4 bg-light rounded-lg">
+                                    <h5 class="fw-700 text-secondary mb-2">Shooting Method</h5>
+                                    <p class="small text-muted mb-0">Converts BVPs to Initial Value Problems (IVPs) and uses root-finding to satisfy boundaries.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section id="mathematical-foundation" class="content-section">
+                        <h2>Mathematical Foundation</h2>
+                        <p>A second-order BVP seeks a function \(y(x)\) on the interval \([a, b]\) such that:</p>
+                        <div class="math-formula">
+                            \[ y''(x) = f(x, y, y'), \quad y(a) = \alpha, \quad y(b) = \beta \]
+                        </div>
+                        
+                        <h3>Existence & Uniqueness</h3>
+                        <p>We rely on the <strong>Picard-Lindelöf theorem</strong>. For linear problems of the form \(y'' + p(x)y' + q(x)y = r(x)\), a unique solution exists if \(p, q, r\) are continuous and \(q(x) > 0\).</p>
+                    </section>
+                    
+                    <section id="input-format" class="content-section">
+                        <h2>Input Format</h2>
+                        <p>The parser supports standard mathematical notation. You specify the right-hand side of the second-order equation.</p>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item bg-transparent px-0 border-light"><i class="bi bi-check2-circle text-success me-2"></i><strong>Arithmetic:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>**</code></li>
+                            <li class="list-group-item bg-transparent px-0 border-light"><i class="bi bi-check2-circle text-success me-2"></i><strong>Functions:</strong> <code>sin</code>, <code>cos</code>, <code>exp</code>, <code>log</code>, <code>sqrt</code></li>
+                            <li class="list-group-item bg-transparent px-0 border-light"><i class="bi bi-check2-circle text-success me-2"></i><strong>Variables:</strong> <code>x</code>, <code>y</code>, <code>yp</code> (y')</li>
+                        </ul>
+                    </section>
+                    
+                    <section id="finite-difference" class="content-section">
+                        <h2>Finite Difference Method</h2>
+                        <p>This method approximates derivatives using central finite differences on a uniform grid. For linear ODEs of the form \(y'' = P(x)y' + Q(x)y + R(x)\), the discretization leads to a tridiagonal system:</p>
+                        <div class="math-formula">
+                            \[ y_{i-1}(2 + hP_i) - y_i(4 + 2h^2Q_i) + y_{i+1}(2 - hP_i) = 2h^2R_i \]
+                        </div>
+                        <p>The domain is discretized into \(N\) points. Currently, the FD engine extracts linear coefficients using symbolic differentiation. <strong class="text-danger">Note: The Finite Difference method strictly requires Linear ODEs.</strong> For non-linear equations, the Shooting Method must be used.</p>
+                    </section>
+                    
+                    <section id="shooting-method" class="content-section">
+                        <h2>Shooting Method</h2>
+                        <p>The shooting method converts the BVP into an Initial Value Problem (IVP). We guess an initial slope \(y'(a) = s\) and integrate using <strong>Runge-Kutta 45</strong>. The mismatch at the boundary \(y(b) - \beta\) (or \(y'(b) - \beta\)) is treated as a root-finding problem \(F(s) = 0\).</p>
+                        <div class="alert alert-info border-0 shadow-sm mt-3">
+                            <p class="mb-0 small"><i class="bi bi-lightbulb"></i> <strong>Pro Tip:</strong> The shooting method is inherently capable of solving high-order <strong>non-linear</strong> problems where finite differences might require complex Newton-Raphson iterations.</p>
+                        </div>
+                    </section>
+                    
+                    <section id="error-analysis" class="content-section">
+                        <h2>Error Analysis</h2>
+                        <p>Every numerical solution involves three primary error sources. Our Finite Difference engine utilizes a 3-point second-order backward difference for Neumann boundary conditions to ensure the global truncation precision strictly maintains \(O(h^2)\).</p>
+                        <div class="row g-3 mt-2 text-center">
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded">
+                                    <h6 class="fw-bold mb-1 small">Truncation</h6>
+                                    <span class="small text-muted">\(O(h^2)\)</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded">
+                                    <h6 class="fw-bold mb-1 small">Round-off</h6>
+                                    <span class="small text-muted">Double Precision</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded">
+                                    <h6 class="fw-bold mb-1 small">Discretization</h6>
+                                    <span class="small text-muted">Grid Errors</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section id="stability-theory" class="content-section">
+                        <h2>Stability Theory</h2>
+                        <p>A method is <strong>stable</strong> if perturbations in input data lead to bounded change in the output. For our finite difference engine, we monitor the matrix condition number to ensure numerical stability.</p>
+                    </section>
+                    
+                    <section id="examples" class="content-section">
+                        <h2>Example Problems</h2>
+                        <div class="card mb-3 border-0 bg-light">
+                            <div class="card-body py-3 px-4">
+                                <h6 class="fw-bold mb-1">Damped Oscillator</h6>
+                                <code class="text-primary small">y'' = -0.5*yp - y + sin(x)</code>
+                            </div>
+                        </div>
+                        <div class="card border-0 bg-light">
+                            <div class="card-body py-3 px-4">
+                                <h6 class="fw-bold mb-1">Constant Gravity</h6>
+                                <code class="text-primary small">y'' = -9.81</code>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section id="advanced-topics" class="content-section">
+                        <h2>Advanced Topics</h2>
+                        <p>The underlying engine uses <code>SciPy</code> and <code>SymPy</code> for symbolic differentiation and high-order integration. For stiff problems, the solver automatically handles convergence using iterative refinement.</p>
+                    </section>
+                    
+                    <section id="limitations" class="content-section">
+                        <h2>Limitations</h2>
+                        <ul class="mb-0 small text-muted">
+                            <li>Supports only single second-order equations.</li>
+                            <li>Interval [a, b] must be finite.</li>
+                            <li>Boundary conditions must be fixed (Dirichlet) or mixed (Neumann).</li>
+                        </ul>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+{% endblock %}
